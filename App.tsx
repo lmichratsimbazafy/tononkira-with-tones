@@ -5,7 +5,6 @@
  * @format
  */
 
-import type {PropsWithChildren} from 'react';
 import React from 'react';
 import {StyleSheet, useColorScheme} from 'react-native';
 
@@ -14,10 +13,11 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {NavigationProvider} from './src/components/navigation/MainRouter';
 import {useRealmContext} from './src/data/realm/models/RealmProvider';
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+import Realm from 'realm';
+import {ToastProvider} from './src/components/providers/ToastProvider';
+import Toast from 'react-native-toast-message';
 
+Realm.copyBundledRealmFiles();
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   console.log('isDarkMode ===>');
@@ -30,8 +30,11 @@ function App(): JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       <RealmProvider>
-        <NavigationProvider />
+        <ToastProvider>
+          <NavigationProvider />
+        </ToastProvider>
       </RealmProvider>
+      <Toast />
     </QueryClientProvider>
   );
 }
