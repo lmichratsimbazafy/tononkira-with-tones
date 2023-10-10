@@ -1,50 +1,95 @@
-import {StyleSheet, TextInput, Keyboard, View, Image} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import {Image, StyleSheet, TextInput, View, Animated} from 'react-native';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MainLayout from '../../components/layout/MainLayout';
 import colours from '../../config/colors';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import {debounce} from 'throttle-debounce';
 //@ts-ignore
 import logo from '../../assets/images/logo.png';
+import Suggestions from '../../components/Suggestions/Suggestions';
+import {Lyrics} from '../../data/realm/models/Lyrics';
+import {useRealmContext} from '../../data/realm/models/RealmProvider';
+import {RealmModelNames} from '../../types';
+import OpenDrawerBotton from '../../components/custom/OpenDrawerBotton';
+import CustomTextInput from '../../components/custom/CustomTextInput';
 
 const SearchScreen = () => {
   const [text, seTtext] = useState<string>('');
   const [showLogo, setShowLogo] = useState<boolean>(true);
+  const {useQuery} = useRealmContext();
+  const [animation] = useState(new Animated.Value(40));
   const handleChangeText = (changeText: string) => {
     seTtext(changeText);
   };
+  const lyrics = useQuery<Lyrics>(RealmModelNames.Lyrics);
+  const [filteredLyrics, setFilteredLyrics] = useState<Realm.Results<Lyrics>>(
+    [] as unknown as Realm.Results<Lyrics>,
+  );
+  const handleSearch = (text: string) => {
+    if (text.length >= 3) {
+      setFilteredLyrics(lyrics.filtered(`title contains[c] '${text}'`));
+    } else {
+      setFilteredLyrics([] as unknown as Realm.Results<Lyrics>);
+      setShowLogo(true);
+    }
+  };
+
+  const animatedStyle = {
+    transform: [
+      {
+        translateY: animation,
+      },
+    ],
+  };
+  const startAnimation = (direction: 'up' | 'down') => {
+    Animated.timing(animation, {
+      toValue: direction === 'up' ? -300 : 40,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const debounceFunc = debounce(300, handleSearch);
+  useEffect(() => {
+    debounceFunc(text);
+    return () => {
+      debounceFunc.cancel();
+    };
+  }, [text]);
+
+  useEffect(() => {
+    if (filteredLyrics.length > 0) {
+      startAnimation('up');
+      setTimeout(() => {
+        setShowLogo(false);
+      }, 300);
+    } else {
+      startAnimation('down');
+      setShowLogo(true);
+    }
+  }, [filteredLyrics]);
 
   return (
-    <MainLayout>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={styles.container}>
+    <MainLayout header={<OpenDrawerBotton />}>
+      <View style={styles.container}>
+        <Animated.View style={animatedStyle}>
           {showLogo && <Image style={styles.logo} source={logo} />}
+        </Animated.View>
 
-          <View style={{flex: 1, alignItems: 'center'}}>
-            <View style={styles.searchContainer}>
+        <View style={{flex: 1, alignItems: 'center'}}>
+          <CustomTextInput
+            leftIcon={
               <EvilIcons name="search" size={30} color={colours.primaryTeal} />
-
-              <TextInput
-                style={styles.TextInput}
-                onChangeText={handleChangeText}
-                value={text}
-                placeholder="Search song"
-                placeholderTextColor="#fff"
-                clearButtonMode="always"
-              />
-            </View>
-
-            {/* {results.length > 0 && text.length > 0 && (
-              <Suggestions
-                style={styles.Suggestions}
-                results={results}
-                navigation={navigation}
-              />
-            )} */}
-          </View>
-          {/* {showLogo && <Credits screen="Search" />} */}
+            }
+            onChangeText={handleChangeText}
+            value={text}
+            placeholder="Search song"
+          />
+          {filteredLyrics.length > 0 && text.length > 0 && (
+            <Suggestions lyricsList={filteredLyrics} />
+          )}
         </View>
-      </TouchableWithoutFeedback>
+      </View>
     </MainLayout>
   );
 };
