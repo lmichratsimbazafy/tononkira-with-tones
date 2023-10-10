@@ -2,11 +2,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useEffect, useState} from 'react';
 import {Button, StyleSheet, View} from 'react-native';
 import Realm from 'realm';
-import {
-  refId,
-  useFind,
-  useList,
-} from '../../data/realm/hooks/realmGenericQuery';
+import {refId, useFind, useList} from '../../data/realm/hooks/lyrics';
 import {Author} from '../../data/realm/models/Author';
 import {RealmModelNames, RootStackParamList} from '../../types';
 import {client} from '../../api/axiosClient';
