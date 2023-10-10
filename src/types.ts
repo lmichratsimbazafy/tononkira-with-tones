@@ -2,6 +2,8 @@ export type RootStackParamList = {
   Home: undefined;
   Search: undefined;
   Update: undefined;
+  Details: {lyricsId: string};
+  Program: undefined;
 };
 
 export enum RealmModelNames {
@@ -31,14 +33,18 @@ export interface AuthorApi {
   id: string;
   name: string;
   song: LyricsApi[] | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface LyricsApi {
   id: string;
   lyrics: string[];
-  authors: string[];
+  authors: AuthorApi[];
   tone: string;
   title: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface GenericList<T> {
@@ -47,4 +53,9 @@ export interface GenericList<T> {
   itemsPerPage: number;
   page: number;
   itemCount: number;
+}
+
+export interface LyricsListPayload {
+  title?: string;
+  fromDate?: string;
 }
