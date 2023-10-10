@@ -1,22 +1,30 @@
-import {StyleSheet, Text, View, SafeAreaView} from 'react-native';
+import {StyleSheet, StatusBar, View, SafeAreaView} from 'react-native';
 import React from 'react';
 import {ScrollView} from 'react-native-gesture-handler';
 import colours from '../../config/colors';
+import BackButton from '../custom/BackButton';
 
 interface MainLayoutProps {
   children: React.JSX.Element;
+  header?: React.JSX.Element;
 }
-const MainLayout: React.FC<MainLayoutProps> = ({children}) => {
+const MainLayout: React.FC<MainLayoutProps> = ({children, header}) => {
   return (
-    <ScrollView style={{backgroundColor: colours.primaryBlack}}>
-      <SafeAreaView style={styles.container}>{children}</SafeAreaView>
-    </ScrollView>
+    <SafeAreaView style={styles.safeView}>
+      <StatusBar barStyle="light-content" />
+      {header ? header : <BackButton />}
+      {children}
+    </SafeAreaView>
   );
 };
 
 export default MainLayout;
 
 const styles = StyleSheet.create({
+  safeView: {
+    flex: 1,
+    backgroundColor: colours.primaryBlack,
+  },
   container: {
     flex: 1,
     marginTop: 50,
