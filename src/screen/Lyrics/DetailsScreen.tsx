@@ -1,19 +1,25 @@
-import React from 'react';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import React, {FC} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
-import MainLayout from '../../components/layout/MainLayout';
-import {RouteProp, useRoute} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Realm from 'realm';
+import MainLayout from '../../components/layout/MainLayout';
+import {StackNavigationProp} from '@react-navigation/stack';
 //@ts-ignore
 import LyricsImage from '../../assets/images/lyrics.png';
+import BackButton from '../../components/custom/BackButton';
 import NotFound from '../../components/custom/NotFound';
 import Lyrics from '../../components/lyrics/Lyrics';
 import colours from '../../config/colors';
 import {Lyrics as Lyricsmodel} from '../../data/realm/models/Lyrics';
 import {useRealmContext} from '../../data/realm/models/RealmProvider';
 import {RealmModelNames, RootStackParamList} from '../../types';
-const DetailsScreen = () => {
+
+type DetailsScreenProps = {
+  navigation: StackNavigationProp<RootStackParamList, 'Details'>;
+};
+const DetailsScreen: FC<DetailsScreenProps> = ({navigation}) => {
   const {useObject} = useRealmContext();
   const {
     params: {lyricsId},
