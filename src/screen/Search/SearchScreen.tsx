@@ -1,17 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {Image, StyleSheet, TextInput, View, Animated} from 'react-native';
+import {Animated, Image, StyleSheet, View} from 'react-native';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import {debounce} from 'throttle-debounce';
 import MainLayout from '../../components/layout/MainLayout';
 import colours from '../../config/colors';
-import {debounce} from 'throttle-debounce';
 //@ts-ignore
 import logo from '../../assets/images/logo.png';
 import Suggestions from '../../components/Suggestions/Suggestions';
+import CustomTextInput from '../../components/custom/CustomTextInput';
+import OpenDrawerBotton from '../../components/custom/OpenDrawerBotton';
 import {Lyrics} from '../../data/realm/models/Lyrics';
 import {useRealmContext} from '../../data/realm/models/RealmProvider';
 import {RealmModelNames} from '../../types';
-import OpenDrawerBotton from '../../components/custom/OpenDrawerBotton';
-import CustomTextInput from '../../components/custom/CustomTextInput';
 
 const SearchScreen = () => {
   const [text, seTtext] = useState<string>('');
