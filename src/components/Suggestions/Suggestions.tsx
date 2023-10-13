@@ -1,21 +1,37 @@
-import {StyleSheet, Text, View} from 'react-native';
 import React, {FC} from 'react';
-import colours from '../../config/colors';
-import {FlatList} from 'react-native';
-import {Keyboard} from 'react-native';
+import {FlatList, Keyboard, StyleSheet, Text, View} from 'react-native';
 import Realm from 'realm';
 import {Lyrics} from '../../data/realm/models/Lyrics';
 import SuggestionItem from './SuggestionItem';
+import colours from '../../config/colors';
 interface SuggestionsProps {
   lyricsList: Realm.Results<Lyrics>;
+  itemAction?: (item: Lyrics) => void;
 }
-const Suggestions: FC<SuggestionsProps> = ({lyricsList}) => {
+const Suggestions: FC<SuggestionsProps> = ({lyricsList, itemAction}) => {
+  const renderItem = ({item}: {item: Lyrics}) => {
+    return (
+      <SuggestionItem handlePress={itemAction} item={item}>
+        <View style={styles.detailsContainer}>
+          <Text numberOfLines={1} style={styles.songTitle}>
+            {item.title}
+          </Text>
+          <Text numberOfLines={1} style={styles.artistDetails}>
+            {item.authors.map(author => author.name).join(' ft. ')}
+          </Text>
+          {/* <Text numberOfLines={1} style={styles.artistDetails}>
+        {item.album.title}
+      </Text> */}
+        </View>
+      </SuggestionItem>
+    );
+  };
   return (
     <FlatList
       onScrollBeginDrag={Keyboard.dismiss}
       data={lyricsList}
       style={{alignSelf: 'stretch'}}
-      renderItem={({item}) => <SuggestionItem item={item} />}
+      renderItem={renderItem}
       keyExtractor={item => item._id.toString()}
     />
   );

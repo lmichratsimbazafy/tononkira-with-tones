@@ -1,38 +1,40 @@
-import React, {FC} from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import {Lyrics} from '../../data/realm/models/Lyrics';
 import {DrawerNavigationProp} from '@react-navigation/drawer';
+import React, {PropsWithChildren} from 'react';
+import {Image, StyleSheet} from 'react-native';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import {useNavigation} from '@react-navigation/native';
+import Realm from 'realm';
 //@ts-ignore
 import Avatar from '../../assets/images/defaultAvatar.png';
 import colours from '../../config/colors';
 import {RootStackParamList} from '../../types';
 import ListItem from '../custom/ListItem';
-import {useNavigation} from '@react-navigation/native';
-type SuggestionItemProps = {
-  item: Lyrics;
+
+type SuggestionItemProps<T extends {_id: Realm.BSON.ObjectId}> = {
+  item: T;
+  handlePress?: (item: T) => void;
 };
-const SuggestionItem: FC<SuggestionItemProps> = ({item}) => {
+const SuggestionItem = <T extends {_id: Realm.BSON.ObjectId}>({
+  item,
+  handlePress,
+  children,
+}: PropsWithChildren<SuggestionItemProps<T>>) => {
   const {navigate} = useNavigation<DrawerNavigationProp<RootStackParamList>>();
 
   return (
     <ListItem
-      onPress={() => {
-        navigate('Details', {lyricsId: item._id.toHexString()});
-      }}
+      onPress={
+        handlePress
+          ? () => handlePress(item)
+          : () => {
+              navigate('Details', {
+                lyricsId: item._id.toHexString(),
+              });
+            }
+      }
       key={item._id.toString()}>
       <Image style={styles.image} source={Avatar} />
-      <View style={styles.detailsContainer}>
-        <Text numberOfLines={1} style={styles.songTitle}>
-          {item.title}
-        </Text>
-        <Text numberOfLines={1} style={styles.artistDetails}>
-          {item.authors.map(author => author.name).join(' ft. ')}
-        </Text>
-        {/* <Text numberOfLines={1} style={styles.artistDetails}>
-            {item.album.title}
-          </Text> */}
-      </View>
+      {children}
       <EvilIcons name="chevron-right" size={54} color="#333" />
     </ListItem>
   );

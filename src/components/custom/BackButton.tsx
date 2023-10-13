@@ -3,8 +3,10 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import colours from '../../config/colors';
-
-const BackButton = () => {
+interface BackButtonProps {
+  handlePress?: () => void;
+}
+const BackButton = ({handlePress}: BackButtonProps) => {
   const navigation = useNavigation();
   return (
     <AntDesignIcons
@@ -12,7 +14,7 @@ const BackButton = () => {
       size={26}
       style={{marginLeft: 10, padding: 10}}
       color={colours.secondaryGrey}
-      onPress={() => navigation.goBack()}
+      onPress={handlePress ? handlePress : () => navigation.goBack()}
     />
   );
 };
